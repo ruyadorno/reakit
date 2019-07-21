@@ -13,7 +13,7 @@
     "coverage": "yarn test --coverage",
     "postcoverage": "open-cli coverage/lcov-report/index.html",
     "type-check": "tsc --noEmit",
-    "lint": "cross-env NODE_ENV=test eslint . --ext js,ts,tsx",
+    "lint": "eslint . --ext js,ts,tsx",
     "examples": "npm run start --prefix examples",
     "clean": "lerna exec --scope reakit* -- npm run clean",
     "build": "lerna exec --scope reakit* --concurrency 1 -- npm run build",
@@ -32,7 +32,7 @@
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "cross-env NODE_ENV=test eslint --ext js,ts,tsx --fix",
+      "eslint --ext js,ts,tsx --fix",
       "git add"
     ],
     "{README,CHANGELOG}.md": [
@@ -68,7 +68,6 @@
     "babel-plugin-module-resolver": "3.2.0",
     "chalk": "2.4.2",
     "core-js": "3.1.4",
-    "cross-env": "5.2.0",
     "cross-spawn": "6.0.5",
     "eslint": "6.0.1",
     "eslint-config-airbnb": "17.1.0",
@@ -87,7 +86,7 @@
     "jest-dom": "3.5.0",
     "lerna": "3.15.0",
     "lint-staged": "8.2.1",
-    "lodash": "4.17.11",
+    "lodash": "4.17.13",
     "@textlint/markdown-to-ast": "6.1.3",
     "md-node-inject": "1.0.0",
     "open-cli": "5.0.0",
