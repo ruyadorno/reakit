@@ -11,23 +11,25 @@ const paths = {
   kanban: Kanban
 };
 
-const App = () => (
-  <div style={{ display: "flex" }}>
-    <ul style={{ flex: 0, whiteSpace: "nowrap" }}>
-      {Object.keys(paths).map(path => (
-        <li key={path}>
-          <Link to={path}>{path}</Link>
-        </li>
-      ))}
-    </ul>
-    <div style={{ margin: 16 }}>
-      <Router>
-        {Object.entries(paths).map(([path, Component]) => (
-          <Component key={path} path={path} />
+function App() {
+  return (
+    <div style={{ display: "flex" }}>
+      <ul style={{ flex: 0, whiteSpace: "nowrap" }}>
+        {Object.keys(paths).map(path => (
+          <li key={path}>
+            <Link to={path}>{path}</Link>
+          </li>
         ))}
-      </Router>
+      </ul>
+      <div style={{ margin: 16 }}>
+        <Router>
+          {Object.entries(paths).map(([path, Component]) => (
+            <Component key={path} path={path} />
+          ))}
+        </Router>
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
 ReactDOM.render(<App />, document.getElementById("root"));

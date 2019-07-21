@@ -5,6 +5,7 @@ import { useLiveRef } from "reakit-utils/useLiveRef";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
+import { isFocusable } from "../Dialog/__utils/tabbable";
 
 export type TabbableOptions = BoxOptions & {
   /**
@@ -74,7 +75,10 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
 
     const onMouseDown = React.useCallback(
       (event: React.MouseEvent) => {
-        if (event.target instanceof HTMLInputElement) {
+        if (
+          event.target instanceof HTMLInputElement ||
+          !event.currentTarget.contains(event.target as HTMLElement)
+        ) {
           if (htmlOnMouseDown) {
             htmlOnMouseDown(event);
           }
@@ -84,8 +88,15 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         if (options.disabled) {
           event.stopPropagation();
         } else {
-          // if not focused already?
-          (ref.current || (event.target as HTMLElement)).focus();
+          if (
+            !event.currentTarget.contains(document.activeElement) ||
+            event.currentTarget === event.target ||
+            (event.target &&
+              !isFocusable(event.target as HTMLElement) &&
+              !(event.target instanceof HTMLLabelElement))
+          ) {
+            (event.currentTarget as HTMLElement).focus();
+          }
           if (htmlOnMouseDown) {
             htmlOnMouseDown(event);
           }

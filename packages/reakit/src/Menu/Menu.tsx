@@ -73,13 +73,7 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
             return true;
           },
           keyMap: event => {
-            warning(
-              !ref.current,
-              "Menu",
-              "Can't detect arrow keys because `ref` wasn't passed to component.",
-              "See https://reakit.io/docs/menu"
-            );
-            const targetIsMenu = event.target === ref.current;
+            const targetIsMenu = event.target === event.currentTarget;
             return {
               Escape: options.hide,
               ArrowUp: targetIsMenu && !isHorizontal && options.last,
@@ -107,13 +101,10 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
       () =>
         createOnKeyDown({
           stopPropagation: true,
-          shouldKeyDown: event => {
-            return Boolean(
-              parent &&
-                ref.current &&
-                ref.current.contains(event.target as Element)
-            );
-          },
+          shouldKeyDown: event =>
+            Boolean(
+              parent && event.currentTarget.contains(event.target as Element)
+            ),
           keyMap: parent
             ? {
                 ArrowRight:

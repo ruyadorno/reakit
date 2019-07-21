@@ -4,7 +4,6 @@ import { createHook } from "reakit-system/createHook";
 import { useId } from "reakit-utils/useId";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { warning } from "reakit-utils/warning";
-import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import {
   TabbableOptions,
@@ -37,6 +36,11 @@ export type RoverHTMLProps = TabbableHTMLProps;
 
 export type RoverProps = RoverOptions & RoverHTMLProps;
 
+function hasFocusWithin(element: HTMLElement) {
+  if (!document.activeElement) return false;
+  return element.contains(document.activeElement);
+}
+
 export const useRover = createHook<RoverOptions, RoverHTMLProps>({
   name: "Rover",
   compose: useTabbable,
@@ -48,7 +52,6 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
     {
       ref: htmlRef,
       tabIndex: htmlTabIndex,
-      onFocus: htmlOnFocus,
       onKeyDown: htmlOnKeyDown,
       ...htmlProps
     }
@@ -79,25 +82,30 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
         );
         return;
       }
-      if (
-        options.unstable_moves &&
-        document.activeElement !== ref.current &&
-        focused
-      ) {
+      if (options.unstable_moves && focused && !hasFocusWithin(ref.current)) {
         ref.current.focus();
       }
     }, [focused, options.unstable_moves]);
 
-    // stopPropagation? onFocusCapture?
-    const onFocus = React.useCallback(() => options.move(stopId), [
-      options.move,
-      stopId
-    ]);
+    React.useEffect(() => {
+      if (!ref.current) return undefined;
+
+      const onFocus = () => options.move(stopId);
+
+      ref.current.addEventListener("focus", onFocus, true);
+      return () => {
+        if (ref.current) {
+          ref.current.removeEventListener("focus", onFocus, true);
+        }
+      };
+    }, [options.move, stopId]);
 
     const onKeyDown = React.useMemo(
       () =>
         createOnKeyDown({
           onKeyDown: htmlOnKeyDown,
+          shouldKeyDown: event =>
+            event.currentTarget.contains(event.target as Node),
           keyMap: {
             ArrowUp: options.orientation !== "horizontal" && options.previous,
             ArrowRight: options.orientation !== "vertical" && options.next,
@@ -124,7 +132,6 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
       id: stopId,
       tabIndex: shouldTabIndex ? htmlTabIndex : -1,
       onKeyDown,
-      onFocus: useAllCallbacks(onFocus, htmlOnFocus),
       ...htmlProps
     };
   }
