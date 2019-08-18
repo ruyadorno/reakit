@@ -18,8 +18,8 @@
     "@types/react-dom": "16.8.4",
     "emotion": "10.0.14",
     "parcel": "1.12.3",
-    "react": "16.9.0-alpha.0",
-    "react-dom": "16.9.0-alpha.0",
+    "react": "16.9.0",
+    "react-dom": "16.9.0",
     "react-spring": "8.0.25",
     "reakit": "^1.0.0-beta.4",
     "typescript": "3.5.2"
