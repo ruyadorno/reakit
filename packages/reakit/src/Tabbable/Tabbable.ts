@@ -4,8 +4,8 @@ import { createHook } from "reakit-system/createHook";
 import { useLiveRef } from "reakit-utils/useLiveRef";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
+import { isFocusable } from "reakit-utils/tabbable";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
-import { isFocusable } from "../Dialog/__utils/tabbable";
 
 export type TabbableOptions = BoxOptions & {
   /**
