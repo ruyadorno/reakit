@@ -256,7 +256,7 @@ export function useRoverState(
     initialState
   );
   const [state, dispatch] = React.useReducer(reducer, {
-    orientation,
+    ...(orientation ? { orientation } : {}),
     stops: [],
     currentId,
     unstable_pastId: null,
