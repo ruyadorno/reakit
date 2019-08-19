@@ -1,7 +1,7 @@
 {
   "name": "kanban",
   "description": "Reakit Kanban example",
-  "version": "1.0.0-beta.4",
+  "version": "1.0.0-beta.5",
   "private": true,
   "keywords": [
     "react",
@@ -19,7 +19,7 @@
     "parcel": "1.12.3",
     "react": "16.9.0",
     "react-dom": "16.9.0",
-    "reakit": "^1.0.0-beta.4",
+    "reakit": "^1.0.0-beta.5",
     "typescript": "3.5.2"
   }
 }

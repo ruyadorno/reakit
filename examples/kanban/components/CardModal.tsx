@@ -2,7 +2,7 @@ import * as React from "react";
 import { DialogProps, Dialog, Button } from "reakit";
 import CardForm from "./CardForm";
 
-type CardModalProps = DialogProps & {
+type CardModalProps = Omit<DialogProps, "onSubmit"> & {
   content: string;
   onSubmit: (content: string) => void;
   onRemove?: () => void;
@@ -14,9 +14,23 @@ function CardModal({ content, onSubmit, onRemove, ...props }: CardModalProps) {
       {dialogProps =>
         props.visible && (
           <div {...dialogProps}>
-            {content}
-            {onRemove && <Button onClick={onRemove}>Remove</Button>}
-            <CardForm onSubmit={onSubmit} content={content} />
+            <CardForm
+              onSubmit={c => {
+                onSubmit(c);
+                props.hide && props.hide();
+              }}
+              content={content}
+            />
+            {onRemove && (
+              <Button
+                onClick={() => {
+                  onRemove();
+                  props.hide && props.hide();
+                }}
+              >
+                Remove
+              </Button>
+            )}
           </div>
         )
       }

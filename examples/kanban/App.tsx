@@ -1,17 +1,12 @@
 import * as React from "react";
-import { Provider, useRoverState } from "reakit";
+import { Provider } from "reakit";
 import * as system from "reakit-system-bootstrap";
-import Column from "./Column";
+import Board from "./components/Board";
 
 function App() {
-  const rover = useRoverState({ orientation: "horizontal" });
   return (
-    <Provider unstable_system={system}>
-      <div style={{ display: "flex" }}>
-        <Column {...rover} title="TODO" />
-        <Column {...rover} title="DOING" />
-        <Column {...rover} title="DONE" />
-      </div>
+    <Provider unstable_system={system} unstable_prefix="kanban">
+      <Board />
     </Provider>
   );
 }

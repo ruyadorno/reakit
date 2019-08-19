@@ -104,6 +104,7 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
       () =>
         createOnKeyDown({
           onKeyDown: htmlOnKeyDown,
+          stopPropagation: true,
           shouldKeyDown: event =>
             event.currentTarget.contains(event.target as Node),
           keyMap: {

@@ -1,27 +1,27 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 import * as React from "react";
-import {
-  RoverProps,
-  Rover,
-  useRoverState,
-  DialogDisclosure,
-  useDialogState
-} from "reakit";
+import { RoverProps, Rover, useRoverState, useToolbarState } from "reakit";
 import Card from "./Card";
-import CardModal from "./CardModal";
+import ColumnToolbar from "./ColumnToolbar";
 
-type ColumnProps = RoverProps & {
+type ColumnProps = Omit<RoverProps, "onSubmit"> & {
   title: string;
+  onSubmit: (content: string) => void;
+  onRemove?: () => void;
 };
 
-let counter = 0;
+let counter = 3;
 
-function Column({ title, ...props }: ColumnProps) {
+const initialCards = [
+  { id: 1, content: "Test card 1" },
+  { id: 2, content: "Test card 2" },
+  { id: 3, content: "Test card 3" }
+];
+
+function Column({ title, onSubmit, onRemove, ...props }: ColumnProps) {
   const rover = useRoverState({ orientation: "vertical" });
-  const dialog = useDialogState();
-  const [cards, setCards] = React.useState<
-    Array<{ id: number; content: string }>
-  >([]);
+  const toolbar = useToolbarState();
+  const [cards, setCards] = React.useState(initialCards);
 
   const addCard = (content: string) => {
     setCards(prevCards => [...prevCards, { id: ++counter, content }]);
@@ -58,20 +58,19 @@ function Column({ title, ...props }: ColumnProps) {
       {roverProps => (
         <div {...roverProps} tabIndex={0}>
           <h1>{title}</h1>
-          <Rover as={DialogDisclosure} {...rover} {...dialog}>
-            Create card
-          </Rover>
-          <CardModal
-            {...dialog}
-            content=""
-            onSubmit={content => {
-              addCard(content);
-              dialog.hide();
-            }}
+
+          <ColumnToolbar
+            {...toolbar}
+            title={title}
+            addCard={addCard}
+            onSubmit={onSubmit}
+            onRemove={onRemove}
           />
+
           {cards.map(card => (
             <Card
               {...rover}
+              tabIndex={0}
               key={card.id}
               content={card.content}
               onRemove={() => removeCard(card.id)}

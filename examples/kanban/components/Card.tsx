@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 import * as React from "react";
-import { RoverProps, Rover, DialogDisclosure, useDialogState } from "reakit";
+import { RoverProps, DialogDisclosure, useDialogState } from "reakit";
 import CardModal from "./CardModal";
+import TabbableRover from "./TabbableRover";
 
-type CardProps = RoverProps & {
+type CardProps = Omit<RoverProps, "onSubmit"> & {
   content: string;
   onSubmit: (content: string) => void;
   onRemove?: () => void;
@@ -14,26 +15,17 @@ function Card({ content, onSubmit, onRemove, ...props }: CardProps) {
   return (
     <>
       <DialogDisclosure {...dialog}>
-        {disclosureProps => (
-          <Rover {...disclosureProps} {...props} as="div">
+        {htmlProps => (
+          <TabbableRover {...htmlProps} {...props} as="div">
             {content}
-          </Rover>
+          </TabbableRover>
         )}
       </DialogDisclosure>
       <CardModal
         {...dialog}
         content={content}
-        onRemove={
-          onRemove &&
-          (() => {
-            onRemove();
-            dialog.hide();
-          })
-        }
-        onSubmit={content => {
-          onSubmit(content);
-          dialog.hide();
-        }}
+        onRemove={onRemove}
+        onSubmit={onSubmit}
       />
     </>
   );

@@ -9,7 +9,7 @@ import {
   unstable_FormHTMLProps as FormHTMLProps
 } from "reakit";
 
-type CardFormProps = FormHTMLProps & {
+type CardFormProps = Omit<FormHTMLProps, "onSubmit"> & {
   content: string;
   onSubmit: (content: string) => void;
 };
