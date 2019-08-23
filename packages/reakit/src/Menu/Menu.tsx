@@ -5,7 +5,6 @@ import { createComponent } from "reakit-system/createComponent";
 import { useCreateElement } from "reakit-system/useCreateElement";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { createHook } from "reakit-system/createHook";
-import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import {
   PopoverOptions,
@@ -48,13 +47,10 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     };
   },
 
-  useProps(options, { ref: htmlRef, onKeyDown: htmlOnKeyDown, ...htmlProps }) {
+  useProps(options, { onKeyDown: htmlOnKeyDown, ...htmlProps }) {
     const parent = React.useContext(MenuContext);
-    const ref = React.useRef<HTMLElement>(null);
-
     const isHorizontal = options.orientation === "horizontal";
     const isVertical = options.orientation === "vertical";
-
     let horizontalParent: MenuContextType | undefined | null = parent;
 
     while (horizontalParent && horizontalParent.orientation !== "horizontal") {
@@ -101,10 +97,12 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
       () =>
         createOnKeyDown({
           stopPropagation: true,
-          shouldKeyDown: event =>
-            Boolean(
+          shouldKeyDown: event => {
+            return Boolean(
+              // https://github.com/facebook/react/issues/11387
               parent && event.currentTarget.contains(event.target as Element)
-            ),
+            );
+          },
           keyMap: parent
             ? {
                 ArrowRight:
@@ -128,7 +126,6 @@ export const useMenu = createHook<MenuOptions, MenuHTMLProps>({
     );
 
     return {
-      ref: mergeRefs(ref, htmlRef),
       role: "menu",
       onKeyDown: useAllCallbacks(rovingBindings, parentBindings, htmlOnKeyDown),
       ...htmlProps

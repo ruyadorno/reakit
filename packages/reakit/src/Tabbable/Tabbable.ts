@@ -5,6 +5,7 @@ import { useLiveRef } from "reakit-utils/useLiveRef";
 import { mergeRefs } from "reakit-utils/mergeRefs";
 import { useAllCallbacks } from "reakit-utils/useAllCallbacks";
 import { isFocusable } from "reakit-utils/tabbable";
+import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import { BoxOptions, BoxHTMLProps, useBox } from "../Box/Box";
 
 export type TabbableOptions = BoxOptions & {
@@ -77,6 +78,7 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
       (event: React.MouseEvent) => {
         if (
           event.target instanceof HTMLInputElement ||
+          // https://github.com/facebook/react/issues/11387
           !event.currentTarget.contains(event.target as HTMLElement)
         ) {
           if (htmlOnMouseDown) {
@@ -88,14 +90,16 @@ export const useTabbable = createHook<TabbableOptions, TabbableHTMLProps>({
         if (options.disabled) {
           event.stopPropagation();
         } else {
+          const currentTarget = event.currentTarget as HTMLElement;
+          const target = event.target as HTMLElement;
+          const controlsFocus =
+            isFocusable(target) || target instanceof HTMLLabelElement;
           if (
-            !event.currentTarget.contains(document.activeElement) ||
-            event.currentTarget === event.target ||
-            (event.target &&
-              !isFocusable(event.target as HTMLElement) &&
-              !(event.target instanceof HTMLLabelElement))
+            !hasFocusWithin(currentTarget) ||
+            currentTarget === target ||
+            !controlsFocus
           ) {
-            (event.currentTarget as HTMLElement).focus();
+            currentTarget.focus();
           }
           if (htmlOnMouseDown) {
             htmlOnMouseDown(event);

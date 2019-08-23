@@ -5,6 +5,7 @@ import { useId } from "reakit-utils/useId";
 import { createOnKeyDown } from "reakit-utils/createOnKeyDown";
 import { warning } from "reakit-utils/warning";
 import { mergeRefs } from "reakit-utils/mergeRefs";
+import { hasFocusWithin } from "reakit-utils/hasFocusWithin";
 import {
   TabbableOptions,
   TabbableHTMLProps,
@@ -35,11 +36,6 @@ export type RoverOptions = TabbableOptions &
 export type RoverHTMLProps = TabbableHTMLProps;
 
 export type RoverProps = RoverOptions & RoverHTMLProps;
-
-function hasFocusWithin(element: HTMLElement) {
-  if (!document.activeElement) return false;
-  return element.contains(document.activeElement);
-}
 
 export const useRover = createHook<RoverOptions, RoverHTMLProps>({
   name: "Rover",
@@ -92,6 +88,7 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
 
       const onFocus = () => options.move(stopId);
 
+      // https://github.com/facebook/react/issues/11387#issuecomment-524113945
       ref.current.addEventListener("focus", onFocus, true);
       return () => {
         if (ref.current) {
@@ -105,7 +102,9 @@ export const useRover = createHook<RoverOptions, RoverHTMLProps>({
         createOnKeyDown({
           onKeyDown: htmlOnKeyDown,
           stopPropagation: true,
+          // Ignore portals
           shouldKeyDown: event =>
+            // https://github.com/facebook/react/issues/11387
             event.currentTarget.contains(event.target as Node),
           keyMap: {
             ArrowUp: options.orientation !== "horizontal" && options.previous,
