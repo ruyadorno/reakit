@@ -1,53 +1,34 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 import * as React from "react";
 import { RoverProps, Rover, useRoverState, useToolbarState } from "reakit";
+import { useBoardContext } from "../hooks/useBoardState";
 import Card from "./Card";
 import ColumnToolbar from "./ColumnToolbar";
 
 type ColumnProps = Omit<RoverProps, "onSubmit"> & {
+  columnId: number;
   title: string;
   onSubmit: (content: string) => void;
   onRemove?: () => void;
 };
 
-let counter = 3;
-
-const initialCards = [
-  { id: 1, content: "Test card 1" },
-  { id: 2, content: "Test card 2" },
-  { id: 3, content: "Test card 3" }
-];
-
-function Column({ title, onSubmit, onRemove, ...props }: ColumnProps) {
+function Column({
+  columnId,
+  title,
+  onSubmit,
+  onRemove,
+  ...props
+}: ColumnProps) {
   const rover = useRoverState({ orientation: "vertical" });
   const toolbar = useToolbarState();
-  const [cards, setCards] = React.useState(initialCards);
+  const { columns, addCard, removeCard, editCard } = useBoardContext();
 
-  const addCard = (content: string) => {
-    setCards(prevCards => [...prevCards, { id: ++counter, content }]);
-  };
-
-  const removeCard = (id: number) => {
-    setCards(prevCards => {
-      const index = prevCards.findIndex(card => card.id === id);
-      return [...prevCards.slice(0, index), ...prevCards.slice(index + 1)];
-    });
-  };
-
-  const editCard = (id: number, content: string) => {
-    setCards(prevCards => {
-      const index = prevCards.findIndex(card => card.id === id);
-      return [
-        ...prevCards.slice(0, index),
-        { id, content },
-        ...prevCards.slice(index + 1)
-      ];
-    });
-  };
+  const { cards = [] } = columns.find(column => column.id === columnId) || {};
 
   return (
     <Rover
       {...props}
+      className="column"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -62,7 +43,7 @@ function Column({ title, onSubmit, onRemove, ...props }: ColumnProps) {
           <ColumnToolbar
             {...toolbar}
             title={title}
-            addCard={addCard}
+            addCard={content => addCard(columnId, content)}
             onSubmit={onSubmit}
             onRemove={onRemove}
           />

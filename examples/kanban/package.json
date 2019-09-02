@@ -16,6 +16,7 @@
   "dependencies": {
     "@types/react": "16.8.22",
     "@types/react-dom": "16.9.0",
+    "constate": "1.2.0",
     "parcel": "1.12.3",
     "react": "16.9.0",
     "react-dom": "16.9.0",
