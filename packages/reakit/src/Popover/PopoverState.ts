@@ -59,6 +59,10 @@ export type PopoverState = DialogState & {
    */
   unstable_originalPlacement: Placement;
   /**
+   * @private
+   */
+  unstable_scheduleUpdate: () => boolean;
+  /**
    * Actual `placement`.
    */
   placement: Placement;
@@ -89,7 +93,7 @@ export type PopoverInitialState = DialogInitialState &
     /**
      * Offset between the reference and the popover.
      */
-    unstable_gutter?: number;
+    gutter?: number;
     /**
      * Prevents popover from being positioned outside the boundary.
      */
@@ -106,10 +110,10 @@ export function usePopoverState(
   initialState: SealedInitialState<PopoverInitialState> = {}
 ): PopoverStateReturn {
   const {
+    gutter = 12,
     placement: sealedPlacement = "bottom",
     unstable_flip: flip = true,
     unstable_shift: shift = true,
-    unstable_gutter: gutter = 12,
     unstable_preventOverflow: preventOverflow = true,
     unstable_boundariesElement: boundariesElement = "scrollParent",
     unstable_fixed: fixed = false,
@@ -129,6 +133,14 @@ export function usePopoverState(
   const [arrowStyles, setArrowStyles] = React.useState<React.CSSProperties>({});
 
   const dialog = useDialogState(sealed);
+
+  const scheduleUpdate = React.useCallback(() => {
+    if (popper.current) {
+      popper.current.scheduleUpdate();
+      return true;
+    }
+    return false;
+  }, []);
 
   React.useLayoutEffect(() => {
     if (referenceRef.current && popoverRef.current) {
@@ -184,6 +196,14 @@ export function usePopoverState(
     fixed
   ]);
 
+  // This fixes cases when `unstable_portal` is `true` only when popover is visible
+  // https://spectrum.chat/reakit/general/i-was-wondering-if-can-hide-portal-of-tooltip-when-conditionally-rendered~4e05ffe1-93e8-4c72-8c85-eccb1c3f2ff1
+  React.useEffect(() => {
+    if (dialog.visible && popper.current) {
+      popper.current.scheduleUpdate();
+    }
+  }, [dialog.visible]);
+
   // Schedule an update if popover has initial visible state set to true
   // So it'll be correctly positioned
   React.useEffect(() => {
@@ -199,6 +219,7 @@ export function usePopoverState(
     unstable_arrowRef: arrowRef,
     unstable_popoverStyles: popoverStyles,
     unstable_arrowStyles: arrowStyles,
+    unstable_scheduleUpdate: scheduleUpdate,
     unstable_originalPlacement: originalPlacement,
     placement,
     place: React.useCallback(place, [])
@@ -212,6 +233,7 @@ const keys: Array<keyof PopoverStateReturn> = [
   "unstable_arrowRef",
   "unstable_popoverStyles",
   "unstable_arrowStyles",
+  "unstable_scheduleUpdate",
   "unstable_originalPlacement",
   "placement",
   "place"

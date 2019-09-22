@@ -1,12 +1,12 @@
 import * as React from "react";
 import { useUpdateEffect } from "reakit-utils/useUpdateEffect";
 import { warning } from "reakit-utils/warning";
-import { isTabbable } from "reakit-utils/tabbable";
+import { isTabbable, forceFocus } from "reakit-utils/tabbable";
 import { DialogOptions } from "../Dialog";
 
 export function useFocusOnHide(
   dialogRef: React.RefObject<HTMLElement>,
-  disclosureRefs: React.RefObject<HTMLElement[]>,
+  disclosuresRef: React.RefObject<HTMLElement[]>,
   options: DialogOptions
 ) {
   const shouldFocus = options.unstable_autoFocusOnHide && !options.visible;
@@ -27,13 +27,13 @@ export function useFocusOnHide(
       return;
     }
 
-    const finalFocusRef =
+    const finalFocusEl =
       (options.unstable_finalFocusRef &&
         options.unstable_finalFocusRef.current) ||
-      (disclosureRefs.current && disclosureRefs.current[0]);
+      (disclosuresRef.current && disclosuresRef.current[0]);
 
-    if (finalFocusRef) {
-      finalFocusRef.focus();
+    if (finalFocusEl) {
+      forceFocus(finalFocusEl);
     } else {
       warning(
         true,
@@ -42,5 +42,5 @@ export function useFocusOnHide(
         "See https://reakit.io/docs/dialog"
       );
     }
-  }, [dialogRef, shouldFocus]);
+  }, [dialogRef, disclosuresRef, shouldFocus]);
 }

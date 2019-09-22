@@ -177,7 +177,7 @@ element.
 
   Shift popover on the start or end of its reference element.
 
-- **`unstable_gutter`** <span title="Experimental">⚠️</span>
+- **`gutter`**
   <code>number | undefined</code>
 
   Offset between the reference and the popover.
@@ -193,6 +193,12 @@ element.
   Boundaries element used by `preventOverflow`.
 
 ### `Tooltip`
+
+- **`unstable_portal`** <span title="Experimental">⚠️</span>
+  <code>boolean | undefined</code>
+
+  Whether or not the dialog should be rendered within `Portal`.
+It's `true` by default if `modal` is `true`.
 
 <details><summary>3 state props</summary>
 
